@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "484611406053",
+    "project_id": "thirantech-9bc07",
+    "storage_bucket": "thirantech-9bc07.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:484611406053:android:c2967177d370b3107fbc0c",
+        "android_client_info": {
+          "package_name": "com.thiran.tasks"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "484611406053-91qh9nob64lsirgrf8ndf7a9stftkctt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBJdvAbpEAALgCaT5FXm2qYbQEfM6UvZU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "484611406053-91qh9nob64lsirgrf8ndf7a9stftkctt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
