@@ -5,7 +5,8 @@ import 'package:tasks/utilities/app_color.dart';
 import 'package:tasks/utilities/app_routes.dart';
 import 'package:tasks/utilities/routes.dart';
 
-import 'bloc/email/search_bloc.dart';
+import 'bloc/email/email_bloc.dart';
+import 'bloc/github/github_bloc.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,6 +22,9 @@ class MyApp extends StatelessWidget {
         providers: [
           BlocProvider<EmailBloc>(
             create: (BuildContext context) => EmailBloc(EmailInitial()),
+          ),
+          BlocProvider<GithubBloc>(
+            create: (BuildContext context) => GithubBloc(GithubInitial()),
           ),
         ],
         child: MaterialApp(

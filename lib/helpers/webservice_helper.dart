@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:tasks/bloc/github/error_response.dart';
 
 import '../utilities/validation_utils.dart';
 import 'web_service_constants.dart';
@@ -22,12 +23,13 @@ class WebServiceHelper {
     final http.Response response = await http
         .get(Uri.parse(url), headers: headers)
         .timeout(
-            const Duration(seconds: WebserviceConstants.apiServiceTimeOutInSeconds),
+            const Duration(
+                seconds: WebserviceConstants.apiServiceTimeOutInSeconds),
             onTimeout: _onTimeOut);
     if (ValidationUtils.isSuccessResponse(response.statusCode)) {
       return jsonDecode(response.body);
     } else {
-      return jsonDecode(response.body);
+      return ErrorResponse.fromJson(jsonDecode(response.body));
     }
   }
 
@@ -43,7 +45,8 @@ class WebServiceHelper {
     final response = await http
         .post(Uri.parse(url), headers: headers, body: body, encoding: encoding)
         .timeout(
-            const Duration(seconds: WebserviceConstants.apiServiceTimeOutInSeconds),
+            const Duration(
+                seconds: WebserviceConstants.apiServiceTimeOutInSeconds),
             onTimeout: _onTimeOut);
     if (ValidationUtils.isSuccessResponse(response.statusCode)) {
       return jsonDecode(response.body);
@@ -64,7 +67,8 @@ class WebServiceHelper {
     final response = await http
         .put(Uri.parse(url), headers: headers, body: body, encoding: encoding)
         .timeout(
-            const Duration(seconds: WebserviceConstants.apiServiceTimeOutInSeconds),
+            const Duration(
+                seconds: WebserviceConstants.apiServiceTimeOutInSeconds),
             onTimeout: _onTimeOut);
     if (ValidationUtils.isSuccessResponse(response.statusCode)) {
       return response.body;
@@ -87,7 +91,8 @@ class WebServiceHelper {
           headers: headers,
         )
         .timeout(
-            const Duration(seconds: WebserviceConstants.apiServiceTimeOutInSeconds),
+            const Duration(
+                seconds: WebserviceConstants.apiServiceTimeOutInSeconds),
             onTimeout: _onTimeOut);
     if (ValidationUtils.isSuccessResponse(response.statusCode)) {
       return response.body;
