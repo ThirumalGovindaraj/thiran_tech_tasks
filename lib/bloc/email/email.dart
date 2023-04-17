@@ -1,17 +1,17 @@
-class Email {
+class EmailRequest {
   final int? transactionId;
   final String? transactionDesc;
   final String? transactionStatus;
   final String? transactionDatetime;
 
-  Email({
+  EmailRequest({
     this.transactionId,
     this.transactionDesc,
     this.transactionStatus,
     this.transactionDatetime,
   });
 
-  Email.fromJson(Map<String, dynamic> json)
+  EmailRequest.fromJson(Map<String, dynamic> json)
       : transactionId = json['transaction_id'] as int?,
         transactionDesc = json['transaction_desc'] as String?,
         transactionStatus = json['transaction_status'] as String?,

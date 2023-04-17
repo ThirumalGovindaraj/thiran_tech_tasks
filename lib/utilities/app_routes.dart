@@ -4,6 +4,7 @@ import 'package:tasks/bloc/github/github_screen.dart';
 import 'package:tasks/bloc/splash/splash_screen.dart';
 import 'package:tasks/utilities/routes.dart';
 
+import '../bloc/email/email_list_screen.dart';
 import '../bloc/home/home_screen.dart';
 
 class AppRoutes {
@@ -13,6 +14,7 @@ class AppRoutes {
     Routes.github: (context) => const GithubScreen(),
     Routes.email: (context) => const EmailScreen(),
     Routes.firebase: (context) => const FirebaseScreen(),
+    Routes.emailList: (context) => const TransactionListScreen(),
     // Routes.splash: (context) => const SplashScreen(),
   };
 }

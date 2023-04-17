@@ -5,4 +5,5 @@ class Routes {
   static const String github = '/github';
   static const String firebase = '/firebase';
   static const String home = '/home';
+  static const String emailList = '/emailList';
 }

@@ -45,7 +45,7 @@ class AppUIDimens {
   static double bookmarkImageSize = 90.0;
   static double radiusCorner = 10.0;
   static double peopleListImageSize = 72.0;
-  static const double buttonHeight = 60.0;
+  static const double buttonHeight = 50.0;
   static const double buttonElevation = 0.5;
 
   static const double searchTextFieldHeight = 40.0;

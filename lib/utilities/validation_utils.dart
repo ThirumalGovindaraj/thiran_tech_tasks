@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 class ValidationUtils {
   ValidationUtils._();
 
@@ -22,6 +24,15 @@ class ValidationUtils {
       return regExp.hasMatch(value);
     } else {
       return false;
+    }
+  }
+
+  static String? dynamicValidation(
+      dynamic args, String field, BuildContext context) {
+    if (args.isEmpty) {
+      return "$field Cannot be blank";
+    } else {
+      return null;
     }
   }
 }

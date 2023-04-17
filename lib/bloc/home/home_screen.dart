@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tasks/utilities/app_ui_dimens.dart';
 import 'package:tasks/widgets/custom_button.dart';
+import 'package:http/http.dart' as http;
 
 import '../../utilities/routes.dart';
 
@@ -19,21 +20,21 @@ class _HomeScreenState extends State<HomeScreen> {
       margin: const EdgeInsets.only(top: AppUIDimens.paddingMedium),
     );
     buttonEmail.onPressed = () {
-      Navigator.pushReplacementNamed(context, Routes.email);
+      Navigator.pushNamed(context, Routes.email);
     };
     var buttonGithub = CustomButton(
       label: "Github Repositories",
       margin: const EdgeInsets.only(top: AppUIDimens.paddingMedium),
     );
     buttonGithub.onPressed = () {
-      Navigator.pushReplacementNamed(context, Routes.github);
+      Navigator.pushNamed(context, Routes.github);
     };
     var buttonFirebase = CustomButton(
       label: "Rise Firebase Ticket",
       margin: const EdgeInsets.only(top: AppUIDimens.paddingMedium),
     );
     buttonFirebase.onPressed = () {
-      Navigator.pushReplacementNamed(context, Routes.firebase);
+      Navigator.pushNamed(context, Routes.firebase);
     };
     return Scaffold(
       appBar: AppBar(

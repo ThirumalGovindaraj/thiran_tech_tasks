@@ -26,16 +26,12 @@ class DBProvider {
     String path = join(documentsDirectory.path, "tasks_db.db");
     return await openDatabase(path, version: 1, onOpen: (db) {},
         onCreate: (Database db, int version) async {
-      await db.execute("CREATE TABLE email ("
-          "transaction_id TEXT PRIMARY KEY,"
-          "transaction_desc TEXT,"
-          "transaction_status TEXT,"
-          "transaction_datetime TEXT,"
-          ")");
+      await db.execute(
+          "CREATE TABLE email (transaction_id TEXT PRIMARY KEY,transaction_desc TEXT,transaction_status TEXT,transaction_datetime TEXT)");
     });
   }
 
-  newEmail(Email cart) async {
+  newEmail(EmailRequest cart) async {
     final db = await database;
     //insert to the table using the new id
     var raw = await db.rawInsert(
@@ -47,10 +43,11 @@ class DBProvider {
           cart.transactionStatus,
           cart.transactionDatetime,
         ]);
+    print("Raw input $raw");
     return raw;
   }
 
-  updateEmail(Email cart) async {
+  updateEmail(EmailRequest cart) async {
     final db = await database;
     // var res = await db.update("carts", {"qty": cart!.qty},
     //     where: 'id = ?', whereArgs: [cart.id]);
@@ -60,15 +57,26 @@ class DBProvider {
   getEmail(String id) async {
     final db = await database;
     var res = await db.query("email", where: "id = ?", whereArgs: [id]);
-    return res.isNotEmpty ? Email.fromJson(res.first) : null;
+    return res.isNotEmpty ? EmailRequest.fromJson(res.first) : null;
   }
 
-  Future<List<Email>> getAllEmail() async {
+  getEmailByStatus(String status) async {
     final db = await database;
-    var res = await db.query("email");
-    List<Email> list =
-        res.isNotEmpty ? res.map((c) => Email.fromJson(c)).toList() : [];
-    return list;
+    var res = await db
+        .query("email", where: "transaction_status = ?", whereArgs: [status]);
+    return res.isNotEmpty ? EmailRequest.fromJson(res.first) : null;
+  }
+
+  Future<dynamic> getAllEmail() async {
+    try {
+      final db = await database;
+      var res = await db.query("email");
+      List<EmailRequest> list =
+          res.isNotEmpty ? res.map((c) => EmailRequest.fromJson(c)).toList() : [];
+      return list;
+    } catch (e) {
+      return e.toString();
+    }
   }
 
   deleteEmail(String id) async {

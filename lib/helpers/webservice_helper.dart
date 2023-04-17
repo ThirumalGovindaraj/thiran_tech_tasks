@@ -48,12 +48,9 @@ class WebServiceHelper {
             const Duration(
                 seconds: WebserviceConstants.apiServiceTimeOutInSeconds),
             onTimeout: _onTimeOut);
-    if (ValidationUtils.isSuccessResponse(response.statusCode)) {
-      return jsonDecode(response.body);
-    } else {
-      debugPrint("Error : ${response.body}");
-      // return EWalletErrorResponse.fromJson(jsonDecode(response.body));
-    }
+
+    return jsonDecode(response.body);
+    // return EWalletErrorResponse.fromJson(jsonDecode(response.body));
   }
 
   /// Post API call

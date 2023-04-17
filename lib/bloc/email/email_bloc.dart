@@ -1,25 +1,30 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tasks/bloc/github/github_repository.dart';
-import 'package:tasks/bloc/github/github_response.dart';
 
+import '../../utilities/database_utils.dart';
 import '../github/error_response.dart';
+import 'email.dart';
 
 class EmailBloc extends Bloc<EmailEvent, EmailState> {
-  final GithubRepository _repository = GithubRepository();
-
   EmailBloc(EmailInitial transactionInitial) : super(transactionInitial) {
     on<PageOnLoadEvent>((event, emit) async {
-      dynamic response = await _repository.getGithubRepository(url: event.url);
-      if (response is GithubResponse) {
+      dynamic response = await DBProvider.db.getAllEmail();
+      if (response is List<EmailRequest>) {
         emit(EmailLoaded(response));
       } else {
         emit(EmailError(response));
       }
     });
-    on<OnEmailListEvent>((event, emit) async {});
-    on<OnEmailLoadEvent>((event, emit) async {
-      emit(EmailLoading());
+    on<OnEmailSaveEvent>((event, emit) async {
+      dynamic response = await DBProvider.db.newEmail(event.email);
+      if (response is int) {
+        emit(EmailSaved());
+      } else {
+        emit(EmailError(response));
+      }
+    });
+    on<OnFormLoadEvent>((event, emit) async {
+      emit(NewFormEmail());
     });
   }
 }
@@ -38,9 +43,9 @@ class EmailInitial extends EmailState {}
 class EmailLoading extends EmailState {}
 
 class EmailLoaded extends EmailState {
-  final GithubResponse response;
+  List<EmailRequest> emailList;
 
-  const EmailLoaded(this.response);
+  EmailLoaded(this.emailList);
 }
 
 class TextEmailLoaded extends EmailState {
@@ -53,20 +58,26 @@ class EmailError extends EmailState {
   const EmailError(this.error);
 }
 
+class EmailSaved extends EmailState {}
+
+class NewFormEmail extends EmailState {}
+
 ///EMail Events
 ///
 abstract class EmailEvent {}
 
 class PageOnLoadEvent extends EmailEvent {
-  String url;
-
-  PageOnLoadEvent(this.url);
+  PageOnLoadEvent();
 }
 
-class OnEmailListEvent extends EmailEvent {
-  String emailText;
+class OnFormLoadEvent extends EmailEvent {
+  OnFormLoadEvent();
+}
 
-  OnEmailListEvent({this.emailText = ""});
+class OnEmailSaveEvent extends EmailEvent {
+  EmailRequest email;
+
+  OnEmailSaveEvent({required this.email});
 }
 
 class OnEmailLoadEvent extends EmailEvent {}
