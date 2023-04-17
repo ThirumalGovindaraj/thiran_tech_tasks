@@ -8,6 +8,7 @@ import 'package:flutter_cupertino_datetime_picker/flutter_cupertino_datetime_pic
 import 'package:tasks/utilities/validation_utils.dart';
 import 'package:tasks/widgets/custom_button.dart';
 
+import '../../utilities/common_utils.dart';
 import '../../utilities/database_utils.dart';
 import '../../utilities/routes.dart';
 import '../../widgets/custom_dropdown_item.dart';
@@ -38,7 +39,7 @@ class _EmailScreenState extends State<EmailScreen> {
 
   getEmails() async {
     dynamic response = await DBProvider.db.getAllEmail();
-    if (response is List<EmailRequest>) {
+    if (response is List<EmailRequest> && response.isNotEmpty) {
       setState(() {
         isEmailRecordsAvailable = true;
       });
@@ -97,109 +98,96 @@ class _EmailScreenState extends State<EmailScreen> {
           ),
           iconTheme: const IconThemeData(color: Colors.white),
         ),
-        body: Center(
-          child: BlocBuilder<EmailBloc, EmailState>(
-            builder: (context, state) {
-              if (state is NewFormEmail) {
-                mDateTimeController.clear();
-                mDescController.clear();
-                return SingleChildScrollView(
-                    child: Padding(
-                  padding: const EdgeInsets.all(AppUIDimens.paddingMedium),
-                  child: Form(
-                      autovalidateMode: mode,
-                      key: _formKey,
-                      child: Column(
-                        children: [
-                          fieldDesc,
-                          fieldStatus,
-                          fieldTime,
-                          const SizedBox(height: 60),
-                          CustomButton(
-                            label: "Submit",
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                context.read<EmailBloc>().add(OnEmailSaveEvent(
-                                    email: EmailRequest(
-                                        transactionDatetime:
-                                            mDateTimeController.text,
-                                        transactionDesc: mDescController.text,
-                                        transactionStatus: transactionStatus)));
-                              } else {
-                                setState(() {
-                                  mode = AutovalidateMode.always;
-                                });
-                              }
-                            },
-                          ),
-                          if (isEmailRecordsAvailable)
-                            const SizedBox(height: 30),
-                          if (isEmailRecordsAvailable)
-                            CustomButton(
-                              label: "Go to Email list",
-                              onPressed: () {
-                                dynamic response = Navigator.pushNamed(
-                                    context, Routes.emailList);
-                                context
-                                    .read<EmailBloc>()
-                                    .add(OnFormLoadEvent());
-                                getEmails();
-                              },
-                            )
-                        ],
-                      )),
-                ));
-              } else if (state is EmailError) {
-                return Column(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(state.error.message!,
-                          style: Theme.of(context).textTheme.headline1),
-                    ]);
-              } else if (state is EmailSaved) {
-                return Padding(
-                    padding: const EdgeInsets.all(AppUIDimens.paddingMedium),
+        body: BlocBuilder<EmailBloc, EmailState>(
+          builder: (context, state) {
+            if (state is NewFormEmail) {
+              mDateTimeController.clear();
+              mDescController.clear();
+              return SingleChildScrollView(
+                  child: Padding(
+                padding: const EdgeInsets.all(AppUIDimens.paddingMedium),
+                child: Form(
+                    autovalidateMode: mode,
+                    key: _formKey,
                     child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.done_all_rounded,
-                            color: Colors.green,
-                            size: 40,
-                          ),
-                          const Text("Email saved successful!"),
-                          const SizedBox(height: 30),
+                      children: [
+                        fieldDesc,
+                        fieldStatus,
+                        fieldTime,
+                        const SizedBox(height: 60),
+                        CustomButton(
+                          label: "Submit",
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              context.read<EmailBloc>().add(OnEmailSaveEvent(
+                                  email: EmailRequest(
+                                      transactionDatetime:
+                                          mDateTimeController.text,
+                                      transactionDesc: mDescController.text,
+                                      transactionStatus: transactionStatus)));
+                            } else {
+                              setState(() {
+                                mode = AutovalidateMode.always;
+                              });
+                            }
+                          },
+                        ),
+                        if (isEmailRecordsAvailable) const SizedBox(height: 30),
+                        if (isEmailRecordsAvailable)
                           CustomButton(
-                            label: "Add New",
+                            label: "Go to Email list",
                             onPressed: () {
+                              dynamic response = Navigator.pushNamed(
+                                  context, Routes.emailList);
                               context.read<EmailBloc>().add(OnFormLoadEvent());
-                            },
-                          ),
-                          const SizedBox(height: 30),
-                          CustomButton(
-                            label: "Go to Email List ",
-                            onPressed: () {
-                              Navigator.pushNamed(context, Routes.emailList);
+                              getEmails();
                             },
                           )
-                        ]));
-              } else if (state is EmailLoading) {
-                return Center(
-                    child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [CircularProgressIndicator()]));
-              } else {
-                return Center(
-                    child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [CircularProgressIndicator()]));
-              }
-            },
-          ),
+                      ],
+                    )),
+              ));
+            } else if (state is EmailError) {
+              return Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(state.error.message!,
+                        style: Theme.of(context).textTheme.headline1),
+                  ]);
+            } else if (state is EmailSaved) {
+              return Padding(
+                  padding: const EdgeInsets.all(AppUIDimens.paddingMedium),
+                  child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.done_all_rounded,
+                          color: Colors.green,
+                          size: 40,
+                        ),
+                        const Text("Email saved successful!"),
+                        const SizedBox(height: 30),
+                        CustomButton(
+                          label: "Add New",
+                          onPressed: () {
+                            context.read<EmailBloc>().add(OnFormLoadEvent());
+                          },
+                        ),
+                        const SizedBox(height: 30),
+                        CustomButton(
+                          label: "Go to Email List ",
+                          onPressed: () {
+                            Navigator.pushNamed(context, Routes.emailList);
+                          },
+                        )
+                      ]));
+            } else if (state is EmailLoading) {
+              return CommonUtils.loadingWidget();
+            } else {
+              return CommonUtils.loadingWidget();
+            }
+          },
         ));
   }
 }

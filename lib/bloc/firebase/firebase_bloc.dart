@@ -22,6 +22,7 @@ class FirebaseBloc extends Bloc<FirebaseEvent, FirebaseState> {
         var downloadURL =
             await FirebaseUtils.uploadPicture(File(event.firebase.attachment!));
         event.firebase.attachment = downloadURL;
+        event.firebase.uid = event.userId;
         dynamic response =
             await FirebaseUtils.saveBugReport(event.firebase, event.userId);
         if (response is bool && response) {

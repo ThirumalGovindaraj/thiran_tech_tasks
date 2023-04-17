@@ -35,8 +35,27 @@ class FirebaseUtils {
   static Future<dynamic> saveBugReport(
       FirebaseRequest request, String userId) async {
     try {
-      final userProfileRef = _db.collection("bugs").doc(userId);
+      final userProfileRef = _db.collection("bugs").doc();
       await userProfileRef.set(request.toJson(), SetOptions(merge: true));
+      return true;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
+  static Future<dynamic> getBugReport(String userId) async {
+    try {
+      _db.collection("bugs").where("uid", isEqualTo: userId).get().then(
+            (querySnapshot) {
+          print("Successfully completed");
+          for (var docSnapshot in querySnapshot.docs) {
+            print('${docSnapshot.id} => ${docSnapshot.data()}');
+          }
+        },
+        onError: (e) => print("Error completing: $e"),
+      );
+      // final userProfileRef = _db.collection("bugs").doc(userId);
+      // await userProfileRef.set(request.toJson(), SetOptions(merge: true));
       return true;
     } catch (e) {
       return e.toString();

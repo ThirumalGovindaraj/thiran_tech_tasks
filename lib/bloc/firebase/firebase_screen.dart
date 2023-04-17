@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tasks/utilities/common_utils.dart';
+import 'package:tasks/utilities/firebase_utils.dart';
 
 import '../../utilities/app_ui_dimens.dart';
 import '../../utilities/validation_utils.dart';
@@ -27,11 +28,13 @@ class _FirebaseScreenState extends State<FirebaseScreen> {
   @override
   void initState() {
     context.read<FirebaseBloc>().add(OnFormLoadEvent());
-    // createAnonymous();
+    createAnonymous();
     askPermissionForCameraStorage();
     super.initState();
   }
+getData(){
 
+}
   askPermissionForCameraStorage() async {
     await CommonUtils.permissionRequest(Permission.storage);
     await CommonUtils.permissionRequest(Permission.camera);
@@ -43,6 +46,7 @@ class _FirebaseScreenState extends State<FirebaseScreen> {
     try {
       userCredential = await FirebaseAuth.instance.signInAnonymously();
       print("Signed in with temporary account.${userCredential.user!.uid}");
+     await FirebaseUtils.getBugReport(userCredential.user!.uid);
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case "operation-not-allowed":
@@ -198,7 +202,7 @@ class _FirebaseScreenState extends State<FirebaseScreen> {
                                         attachment:
                                             image != null ? image!.path : "",
                                         location: mLocationController.text),
-                                    userId: androidInfo.id));
+                                    userId:userCredential.user.uid));
                           } else {
                             setState(() {
                               mode = AutovalidateMode.always;
@@ -246,17 +250,9 @@ class _FirebaseScreenState extends State<FirebaseScreen> {
                       ),
                     ]));
           } else if (state is FirebaseLoading) {
-            return Center(
-                child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [CircularProgressIndicator()]));
+            return CommonUtils.loadingWidget();
           } else {
-            return Center(
-                child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [CircularProgressIndicator()]));
+            return CommonUtils.loadingWidget();
           }
         },
       ),

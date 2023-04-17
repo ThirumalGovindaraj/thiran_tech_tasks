@@ -67,19 +67,9 @@ class _GithubScreenState extends State<GithubScreen> {
                             style: Theme.of(context).textTheme.headline1)
                       ]));
             } else if (state is GithubLoading) {
-              return SizedBox(
-                  height: MediaQuery.of(context).size.height / 2,
-                  child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [CircularProgressIndicator()]));
+              return CommonUtils.loadingWidget();
             } else {
-              return SizedBox(
-                  height: MediaQuery.of(context).size.height / 2,
-                  child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [CircularProgressIndicator()]));
+              return CommonUtils.loadingWidget();
             }
           },
         ),

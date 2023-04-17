@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tasks/utilities/database_utils.dart';
+import 'package:tasks/utilities/common_utils.dart';
 
 import '../../utilities/app_ui_dimens.dart';
+import '../../widgets/custom_button.dart';
 import 'email.dart';
 import 'email_bloc.dart';
 
@@ -24,6 +25,14 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var errorReportButton = CustomButton(
+      label: "Send Error Report",
+      margin: const EdgeInsets.all(AppUIDimens.paddingMedium),
+    );
+    errorReportButton.buttonColor = Colors.red;
+    errorReportButton.onPressed = () {
+      CommonUtils.sendEmail(body: "Body text",subject: "ErrorReport");
+    };
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -32,6 +41,8 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
         ),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
+      floatingActionButton: isErrorReportAvailable ? errorReportButton : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: Center(
         child: BlocBuilder<EmailBloc, EmailState>(
           builder: (context, state) {
@@ -40,6 +51,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                   padding: const EdgeInsets.symmetric(
                       horizontal: AppUIDimens.paddingXXSmall),
                   itemBuilder: (context, index) {
+                    errorReportAvailable(state.emailList);
                     return Card(
                         margin: const EdgeInsets.all(AppUIDimens.paddingXSmall),
                         child: Padding(
@@ -51,7 +63,33 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                                 Text(state.emailList[index].transactionDesc!),
                                 Text(state
                                     .emailList[index].transactionDatetime!),
-                                Text(state.emailList[index].transactionStatus!)
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Row(children: [
+                                  Container(
+                                    height: 15,
+                                    width: 15,
+                                    margin: const EdgeInsets.only(right: 10),
+                                    decoration: BoxDecoration(
+                                        color:
+                                            CommonUtils.getColorBasedOnStatus(
+                                                state.emailList[index]
+                                                    .transactionStatus!),
+                                        // border: Border.all(color: Theme.of(context).primaryColor),
+                                        borderRadius:
+                                            BorderRadius.circular(50)),
+                                  ),
+                                  Text(
+                                    state.emailList[index].transactionStatus!,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: CommonUtils.getColorBasedOnStatus(
+                                          state.emailList[index]
+                                              .transactionStatus!),
+                                    ),
+                                  )
+                                ])
                               ],
                             )));
                   },
@@ -68,23 +106,23 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                             style: Theme.of(context).textTheme.headline1)
                       ]));
             } else if (state is EmailLoading) {
-              return SizedBox(
-                  height: MediaQuery.of(context).size.height / 2,
-                  child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [CircularProgressIndicator()]));
+              return CommonUtils.loadingWidget();
             } else {
-              return SizedBox(
-                  height: MediaQuery.of(context).size.height / 2,
-                  child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [CircularProgressIndicator()]));
+              return CommonUtils.loadingWidget();
             }
           },
         ),
       ),
     );
+  }
+
+  bool isErrorReportAvailable = false;
+
+  errorReportAvailable(List<EmailRequest> emails) {
+    for (EmailRequest request in emails) {
+      if (request.transactionStatus.toString() == "Error".toString()) {
+        isErrorReportAvailable = true;
+      }
+    }
   }
 }

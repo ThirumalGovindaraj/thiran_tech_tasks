@@ -38,6 +38,14 @@ class CommonUtils {
     );
   }
 
+  static Widget loadingWidget() {
+    return Center(
+        child: Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [CircularProgressIndicator()]));
+  }
+
   static sendEmail(
       {String body = "",
       String subject = "",
@@ -45,12 +53,12 @@ class CommonUtils {
       String cc = "",
       String bcc = ""}) async {
     final Email email = Email(
-      body: 'Email body',
-      subject: 'Email subject',
+      body: body,
+      subject: subject,
       recipients: ['thirumal773@gmail.com'],
       cc: ['cc@example.com'],
       bcc: ['bcc@example.com'],
-      attachmentPaths: ['/path/to/attachment.zip'],
+      attachmentPaths: [],
       isHTML: false,
     );
 
@@ -67,5 +75,15 @@ class CommonUtils {
     }
   }
 
-
+  static getColorBasedOnStatus(String status) {
+    if (status == "Success") {
+      return Colors.green;
+    } else if (status == "Pending") {
+      return Colors.orange;
+    } else if (status == "Error") {
+      return Colors.red;
+    } else {
+      return Colors.black;
+    }
+  }
 }
