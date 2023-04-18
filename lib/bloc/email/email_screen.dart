@@ -76,19 +76,7 @@ class _EmailScreenState extends State<EmailScreen> {
     fieldTime.validator = (arg) {
       return ValidationUtils.dynamicValidation(arg, "DateTime", context);
     };
-    fieldTime.onTap = () {
-      DatePicker.showDatePicker(context,
-          dateFormat: "yyyy-MM-dd",
-          pickerTheme: DateTimePickerTheme(
-              itemHeight: 55,
-              itemTextStyle: const TextStyle(fontSize: 17, color: Colors.black),
-              cancelTextStyle: const TextStyle(fontSize: 16, color: Colors.red),
-              confirmTextStyle: TextStyle(
-                  fontSize: 16, color: Theme.of(context).primaryColor)),
-          onConfirm: (dateTime, List<int> index) {
-        mDateTimeController.text = DateFormat('yyyy-MM-dd').format(dateTime);
-      });
-    };
+    fieldTime.onTap = fetchDate;
 
     return Scaffold(
         appBar: AppBar(
@@ -136,8 +124,8 @@ class _EmailScreenState extends State<EmailScreen> {
                         if (isEmailRecordsAvailable)
                           CustomButton(
                             label: "Go to Email list",
-                            onPressed: () {
-                              dynamic response = Navigator.pushNamed(
+                            onPressed: () async{
+                              dynamic response = await Navigator.pushNamed(
                                   context, Routes.emailList);
                               context.read<EmailBloc>().add(OnFormLoadEvent());
                               getEmails();
@@ -189,5 +177,19 @@ class _EmailScreenState extends State<EmailScreen> {
             }
           },
         ));
+  }
+
+  Future<void> fetchDate()async {
+    DatePicker.showDatePicker(context,
+        dateFormat: "yyyy-MM-dd",
+        pickerTheme: DateTimePickerTheme(
+            itemHeight: 55,
+            itemTextStyle: const TextStyle(fontSize: 17, color: Colors.black),
+            cancelTextStyle: const TextStyle(fontSize: 16, color: Colors.red),
+            confirmTextStyle: TextStyle(
+                fontSize: 16, color: Theme.of(context).primaryColor)),
+        onConfirm: (dateTime, List<int> index) {
+          mDateTimeController.text = DateFormat('yyyy-MM-dd').format(dateTime);
+        });
   }
 }

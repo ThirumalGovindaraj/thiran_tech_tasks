@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tasks/utilities/common_utils.dart';
+import 'package:tasks/utilities/database_utils.dart';
 
 import '../../utilities/app_ui_dimens.dart';
 import '../../widgets/custom_button.dart';
-import 'email.dart';
-import 'email_bloc.dart';
+import '../email/email.dart';
+import '../email/email_bloc.dart';
 
 class TransactionListScreen extends StatefulWidget {
   const TransactionListScreen({Key? key}) : super(key: key);
@@ -20,6 +21,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
   @override
   void initState() {
     context.read<EmailBloc>().add(PageOnLoadEvent());
+    errorReportAvailable();
     super.initState();
   }
 
@@ -31,7 +33,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
     );
     errorReportButton.buttonColor = Colors.red;
     errorReportButton.onPressed = () {
-      CommonUtils.sendEmail(body: "Body text",subject: "ErrorReport");
+      CommonUtils.sendEmail(body: "Body text", subject: "ErrorReport");
     };
     return Scaffold(
       appBar: AppBar(
@@ -51,7 +53,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                   padding: const EdgeInsets.symmetric(
                       horizontal: AppUIDimens.paddingXXSmall),
                   itemBuilder: (context, index) {
-                    errorReportAvailable(state.emailList);
+                    // errorReportAvailable(state.emailList);
                     return Card(
                         margin: const EdgeInsets.all(AppUIDimens.paddingXSmall),
                         child: Padding(
@@ -118,10 +120,15 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
 
   bool isErrorReportAvailable = false;
 
-  errorReportAvailable(List<EmailRequest> emails) {
-    for (EmailRequest request in emails) {
-      if (request.transactionStatus.toString() == "Error".toString()) {
-        isErrorReportAvailable = true;
+  errorReportAvailable() async {
+    dynamic response = await DBProvider.db.getAllEmail();
+
+    if (response is List<EmailRequest> && response.isNotEmpty) {
+      for (EmailRequest request in response) {
+        if (request.transactionStatus.toString() == "Error".toString()) {
+          isErrorReportAvailable = true;
+          setState(() {});
+        }
       }
     }
   }

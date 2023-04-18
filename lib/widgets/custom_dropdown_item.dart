@@ -12,15 +12,17 @@ class DropDownItem extends StatefulWidget {
   // final String defValue;
   final bool hideRulerLine;
   final List<String> dropDownItems;
+
   // final ValueChanged<String> validator;
   final String name;
 
-  DropDownItem(this.name,
-      {required this.onChange,
-      // required this.defValue,
-      required this.dropDownItems,
-      this.hideRulerLine: false,
-      });
+  DropDownItem(
+    this.name, {
+    required this.onChange,
+    // required this.defValue,
+    required this.dropDownItems,
+    this.hideRulerLine: false,
+  });
 }
 
 class DropDownItemState extends State<DropDownItem> {
@@ -30,21 +32,15 @@ class DropDownItemState extends State<DropDownItem> {
   Widget build(BuildContext context) {
     final field = CustomTextField(
       controller: TextEditingController(),
-      // helperText: "Status",
       prefixIcon: const Padding(
           padding: EdgeInsets.all(AppUIDimens.paddingSmall),
-          child: Icon(Icons.monetization_on_outlined)/*Image.asset(
-            AppIcons.calendarIcon,
-            height: 27,
-            color: Theme.of(context).primaryColor  Colors.grey ,
-          )*/),
+          child: Icon(Icons.monetization_on_outlined)),
       textInputType: TextInputType.text,
       margin: EdgeInsets.zero,
     );
     field.validator = (arg) {
       if (value == null) {
-        return ValidationUtils.dynamicValidation(arg, widget.name,
-            context); //AppLocalizations.of(context)!.translate(StringResource.ple);
+        return ValidationUtils.dynamicValidation(arg, widget.name, context);
       }
     };
     return Column(
@@ -52,7 +48,7 @@ class DropDownItemState extends State<DropDownItem> {
       children: <Widget>[
         Stack(
           children: [
-            field,
+            Padding(padding:const EdgeInsets.only(top: 5),child:field),
             Padding(
                 padding: const EdgeInsets.only(left: 15, right: 15, top: 7),
                 child: DropdownButtonHideUnderline(

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:tasks/bloc/firebase_list/firebase_list_bloc.dart';
 import 'package:tasks/bloc/home/home_screen.dart';
 import 'package:tasks/helpers/app_preferences.dart';
 import 'package:tasks/utilities/app_color.dart';
@@ -230,6 +231,10 @@ class MyApp extends StatelessWidget {
           ),
           BlocProvider<FirebaseBloc>(
             create: (BuildContext context) => FirebaseBloc(FirebaseInitial()),
+          ),
+          BlocProvider<FirebaseListBloc>(
+            create: (BuildContext context) =>
+                FirebaseListBloc(FirebaseListInitial()),
           ),
         ],
         child: MaterialApp(

@@ -11,6 +11,7 @@ import 'package:tasks/utilities/common_utils.dart';
 import 'package:tasks/utilities/firebase_utils.dart';
 
 import '../../utilities/app_ui_dimens.dart';
+import '../../utilities/routes.dart';
 import '../../utilities/validation_utils.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_textfield.dart';
@@ -32,9 +33,9 @@ class _FirebaseScreenState extends State<FirebaseScreen> {
     askPermissionForCameraStorage();
     super.initState();
   }
-getData(){
 
-}
+  getData() {}
+
   askPermissionForCameraStorage() async {
     await CommonUtils.permissionRequest(Permission.storage);
     await CommonUtils.permissionRequest(Permission.camera);
@@ -46,7 +47,7 @@ getData(){
     try {
       userCredential = await FirebaseAuth.instance.signInAnonymously();
       print("Signed in with temporary account.${userCredential.user!.uid}");
-     await FirebaseUtils.getBugReport(userCredential.user!.uid);
+      await FirebaseUtils.getBugReport(userCredential.user!.uid);
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case "operation-not-allowed":
@@ -69,6 +70,33 @@ getData(){
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "Rise Ticket",
+          style: TextStyle(color: Colors.white),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      body: BlocBuilder<FirebaseBloc, FirebaseState>(
+        builder: (context, state) {
+          if (state is NewFormFirebase) {
+            return firebaseEntryForm();
+          } else if (state is FirebaseError) {
+            return errorWidget(state);
+          } else if (state is FirebaseSaved) {
+            return firebaseSaved();
+          } else if (state is FirebaseLoading) {
+            return CommonUtils.loadingWidget();
+          } else {
+            return CommonUtils.loadingWidget();
+          }
+        },
+      ),
+    );
+  }
+
+  firebaseEntryForm() {
     var fieldTitle = CustomTextField(
       controller: mTitleController,
       prefixIcon: const Icon(Icons.description_outlined),
@@ -105,158 +133,141 @@ getData(){
     );
     fieldAttachment.hint = "Attachment";
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Rise Ticket",
-          style: TextStyle(color: Colors.white),
-        ),
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
-      body: BlocBuilder<FirebaseBloc, FirebaseState>(
-        builder: (context, state) {
-          if (state is NewFormFirebase) {
-            return SingleChildScrollView(
-                child: Padding(
-              padding: const EdgeInsets.all(AppUIDimens.paddingMedium),
-              child: Form(
-                  autovalidateMode: mode,
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      fieldTitle,
-                      fieldDesc,
-                      fieldLocation,
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      if (image != null)
-                        SizedBox(
-                            height: 130,
-                            child: Stack(
-                              alignment: Alignment.topRight,
-                              children: [
-                                Center(
-                                    child: Image.file(File(image!.path),
-                                        height: 100)),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(
-                                        Icons.cancel_rounded,
-                                        color: Colors.black,
-                                      ),
-                                      onPressed: () {
-                                        image = null;
-                                        setState(() {});
-                                      },
-                                    )
-                                  ],
-                                )
-                              ],
-                            )),
-                      if (image == null)
-                        const SizedBox(height: 30, child: Text("Select Image")),
-                      if (image == null)
-                        CustomButton(
-                          label: "Image from Gallery",
-                          arrowVisible: false,
-                          onPressed: () async {
-                            image = (await ImagePicker().pickImage(
-                                source: ImageSource.gallery)) as XFile;
-                            setState(() {});
-                          },
-                        ),
-                      if (image == null)
-                        const SizedBox(
-                          height: 20,
-                          child: Center(child: Text("-------- OR ---------")),
-                        ),
-                      if (image == null)
-                        CustomButton(
-                          label: "Image from Camera",
-                          arrowVisible: false,
-                          onPressed: () async {
-                            image = (await ImagePicker().pickImage(
-                                source: ImageSource.camera)) as XFile;
-                            setState(() {});
-                          },
-                        ),
-                      const SizedBox(height: 30),
-                      CustomButton(
-                        label: "Submit",
-                        onPressed: () async {
-                          if (_formKey.currentState!.validate()) {
-                            AndroidDeviceInfo androidInfo =
-                                await DeviceInfoPlugin().androidInfo;
-                            context.read<FirebaseBloc>().add(PageOnLoadEvent());
-                            context.read<FirebaseBloc>().add(
-                                OnFirebaseSaveEvent(
-                                    firebase: FirebaseRequest(
-                                        title: mTitleController.text,
-                                        description: mDescController.text,
-                                        date: DateFormat("dd-MM-yyyy HH:mm:ss")
-                                            .format(DateTime.now()),
-                                        attachment:
-                                            image != null ? image!.path : "",
-                                        location: mLocationController.text),
-                                    userId:userCredential.user.uid));
-                          } else {
-                            setState(() {
-                              mode = AutovalidateMode.always;
-                            });
-                          }
-                        },
-                      ),
-                    ],
-                  )),
-            ));
-          } else if (state is FirebaseError) {
-            return Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(state.error.toString()),
-                ]);
-          } else if (state is FirebaseSaved) {
-            _clearFields();
-            return Padding(
-                padding: const EdgeInsets.all(AppUIDimens.paddingMedium),
-                child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.done_all_rounded,
-                        color: Colors.green,
-                        size: 40,
-                      ),
-                      const Text("Report sent successfully!"),
-                      const SizedBox(height: 30),
-                      CustomButton(
-                        label: "New Report",
-                        onPressed: () {
-                          context.read<FirebaseBloc>().add(OnFormLoadEvent());
-                        },
-                      ),
-                      const SizedBox(height: 30),
-                      CustomButton(
-                        label: "Go To Report Detail Screen",
-                        onPressed: () {
-                          context.read<FirebaseBloc>().add(OnFormLoadEvent());
-                        },
-                      ),
-                    ]));
-          } else if (state is FirebaseLoading) {
-            return CommonUtils.loadingWidget();
-          } else {
-            return CommonUtils.loadingWidget();
-          }
-        },
-      ),
-    );
+    return SingleChildScrollView(
+        child: Padding(
+      padding: const EdgeInsets.all(AppUIDimens.paddingMedium),
+      child: Form(
+          autovalidateMode: mode,
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              fieldTitle,
+              fieldDesc,
+              fieldLocation,
+              const SizedBox(
+                height: 20,
+              ),
+              if (image != null)
+                SizedBox(
+                    height: 130,
+                    child: Stack(
+                      alignment: Alignment.topRight,
+                      children: [
+                        Center(
+                            child: Image.file(File(image!.path), height: 100)),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            IconButton(
+                              icon: const Icon(
+                                Icons.cancel_rounded,
+                                color: Colors.black,
+                              ),
+                              onPressed: () {
+                                image = null;
+                                setState(() {});
+                              },
+                            )
+                          ],
+                        )
+                      ],
+                    )),
+              if (image == null)
+                const SizedBox(height: 30, child: Text("Select Image")),
+              if (image == null)
+                CustomButton(
+                  label: "Image from Gallery",
+                  arrowVisible: false,
+                  onPressed: () async {
+                    image = (await ImagePicker()
+                        .pickImage(source: ImageSource.gallery)) as XFile;
+                    setState(() {});
+                  },
+                ),
+              if (image == null)
+                const SizedBox(
+                  height: 20,
+                  child: Center(child: Text("-------- OR ---------")),
+                ),
+              if (image == null)
+                CustomButton(
+                  label: "Image from Camera",
+                  arrowVisible: false,
+                  onPressed: () async {
+                    image = (await ImagePicker()
+                        .pickImage(source: ImageSource.camera)) as XFile;
+                    setState(() {});
+                  },
+                ),
+              const SizedBox(height: 30),
+              CustomButton(
+                label: "Submit",
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    AndroidDeviceInfo androidInfo =
+                        await DeviceInfoPlugin().androidInfo;
+                    context.read<FirebaseBloc>().add(PageOnLoadEvent());
+                    context.read<FirebaseBloc>().add(OnFirebaseSaveEvent(
+                        firebase: FirebaseRequest(
+                            title: mTitleController.text,
+                            description: mDescController.text,
+                            date: DateFormat("dd-MM-yyyy HH:mm:ss")
+                                .format(DateTime.now()),
+                            attachment: image != null ? image!.path : "",
+                            location: mLocationController.text),
+                        userId: userCredential.user.uid));
+                  } else {
+                    setState(() {
+                      mode = AutovalidateMode.always;
+                    });
+                  }
+                },
+              ),
+            ],
+          )),
+    ));
+  }
+
+  errorWidget(FirebaseError state) {
+    return Column(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(state.error.toString()),
+        ]);
+  }
+
+  firebaseSaved() {
+    _clearFields();
+    return Padding(
+        padding: const EdgeInsets.all(AppUIDimens.paddingMedium),
+        child: Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.done_all_rounded,
+                color: Colors.green,
+                size: 40,
+              ),
+              const Text("Report sent successfully!"),
+              const SizedBox(height: 30),
+              CustomButton(
+                label: "New Report",
+                onPressed: () {
+                  context.read<FirebaseBloc>().add(OnFormLoadEvent());
+                },
+              ),
+              const SizedBox(height: 30),
+              CustomButton(
+                label: "Go To Report Detail Screen",
+                onPressed: () {
+                  // context.read<FirebaseBloc>().add(OnFormLoadEvent());
+                  Navigator.pushNamed(context, Routes.firebaseList);
+                },
+              ),
+            ]));
   }
 
   _clearFields() {
