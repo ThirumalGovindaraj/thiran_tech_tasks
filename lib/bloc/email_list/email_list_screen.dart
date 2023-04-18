@@ -33,7 +33,16 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
     );
     errorReportButton.buttonColor = Colors.red;
     errorReportButton.onPressed = () {
-      CommonUtils.sendEmail(body: "Body text", subject: "ErrorReport");
+      String errorMsg = "";
+      if (response is List<EmailRequest> && response.isNotEmpty) {
+        for (EmailRequest request in response) {
+          if (request.transactionStatus.toString() == "Error".toString()) {
+            errorMsg =
+                "$errorMsg\n\n Transaction Description: ${request.transactionDesc!}\n Transaction status: ${request.transactionStatus!}\n Date Time: ${request.transactionDatetime!}";
+          }
+        }
+      }
+      CommonUtils.sendEmail(body: errorMsg, subject: "ErrorReport");
     };
     return Scaffold(
       appBar: AppBar(
@@ -119,9 +128,10 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
   }
 
   bool isErrorReportAvailable = false;
+  dynamic response;
 
   errorReportAvailable() async {
-    dynamic response = await DBProvider.db.getAllEmail();
+    response = await DBProvider.db.getAllEmail();
 
     if (response is List<EmailRequest> && response.isNotEmpty) {
       for (EmailRequest request in response) {
