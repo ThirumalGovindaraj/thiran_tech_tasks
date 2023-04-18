@@ -43,12 +43,18 @@ class _FirebaseScreenState extends State<FirebaseScreen> {
   }
 
   var userCredential;
+  bool showListButton = false;
 
   createAnonymous() async {
     try {
       userCredential = await FirebaseAuth.instance.signInAnonymously();
       print("Signed in with temporary account.${userCredential.user!.uid}");
-     // await FirebaseUtils.getBugReport(userCredential.user!.uid);
+      dynamic list = await FirebaseUtils.getBugReport(userCredential.user!.uid);
+      if (list is List<FirebaseRequest>) {
+        setState(() {
+          showListButton = true;
+        });
+      }
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case "operation-not-allowed":
@@ -74,7 +80,7 @@ class _FirebaseScreenState extends State<FirebaseScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Rise Ticket",
+          "Rise Firebase Ticket",
           style: TextStyle(color: Colors.white),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
@@ -225,6 +231,17 @@ class _FirebaseScreenState extends State<FirebaseScreen> {
                   }
                 },
               ),
+              if(showListButton)
+              const SizedBox(height: 30),
+              if(showListButton)
+              CustomButton(
+                label: "Go To Report List Screen",
+                onPressed: () {
+                  // context.read<FirebaseBloc>().add(OnFormLoadEvent());
+                  Navigator.pushNamed(context, Routes.firebaseList,
+                      arguments: Argument(userCredential.user!.uid));
+                },
+              ),
             ],
           )),
     ));
@@ -262,7 +279,7 @@ class _FirebaseScreenState extends State<FirebaseScreen> {
               ),
               const SizedBox(height: 30),
               CustomButton(
-                label: "Go To Report Detail Screen",
+                label: "Go To Report List Screen",
                 onPressed: () {
                   // context.read<FirebaseBloc>().add(OnFormLoadEvent());
                   Navigator.pushNamed(context, Routes.firebaseList,

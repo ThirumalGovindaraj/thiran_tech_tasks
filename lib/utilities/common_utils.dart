@@ -30,6 +30,8 @@ class CommonUtils {
   static showBottomSheet(BuildContext context, {dynamic repoItem}) async {
     showModalBottomSheet<void>(
       context: context,
+      enableDrag: false,
+      isDismissible: false,
       backgroundColor: Colors.transparent,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
@@ -43,6 +45,8 @@ class CommonUtils {
   static showFirebaseBottomSheet(BuildContext context, {dynamic firebaseItem}) async {
     showModalBottomSheet<void>(
       context: context,
+      enableDrag: false,
+      isDismissible: false,
       backgroundColor: Colors.transparent,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),

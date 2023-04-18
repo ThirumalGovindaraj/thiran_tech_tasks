@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:tasks/bloc/firebase/firebase_request.dart';
 import 'package:tasks/bloc/github/repo_detail_item.dart';
 import 'package:tasks/utilities/app_ui_dimens.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class FirebaseDetailScreen extends StatelessWidget {
   final FirebaseRequest item;
@@ -48,14 +49,18 @@ class FirebaseDetailScreen extends StatelessWidget {
                     ],
                   )),
               if (item.attachment != null)
-                Center(
-                    child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8.0),
-                        child: CachedNetworkImage(
-                            imageUrl: item.attachment!,
-                            placeholder: (context, url) =>
-                                const Icon(Icons.account_circle),
-                            width: 300))),
+                GestureDetector(
+                    onTap: () {
+                      _launchUrl(item.attachment!);
+                    },
+                    child: Center(
+                        child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: CachedNetworkImage(
+                                imageUrl: item.attachment!,
+                                placeholder: (context, url) =>
+                                    const Icon(Icons.account_circle),
+                                width: 300)))),
               const SizedBox(
                 height: 30,
               ),
@@ -72,7 +77,7 @@ class FirebaseDetailScreen extends StatelessWidget {
                 fieldValue: item.location!,
               ),
               Padding(
-                  padding: EdgeInsets.symmetric(
+                  padding: const EdgeInsets.symmetric(
                       horizontal: AppUIDimens.paddingMedium),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,5 +89,11 @@ class FirebaseDetailScreen extends StatelessWidget {
             ],
           ),
         ));
+  }
+
+  Future<void> _launchUrl(String url) async {
+    if (!await launchUrl(Uri.parse(url))) {
+      throw Exception('Could not launch $url');
+    }
   }
 }
