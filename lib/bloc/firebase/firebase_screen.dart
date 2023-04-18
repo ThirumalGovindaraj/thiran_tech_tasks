@@ -85,6 +85,7 @@ class _FirebaseScreenState extends State<FirebaseScreen> {
         ),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
+      backgroundColor: Colors.grey[200],
       body: BlocBuilder<FirebaseBloc, FirebaseState>(
         builder: (context, state) {
           if (state is NewFormFirebase) {
@@ -141,110 +142,114 @@ class _FirebaseScreenState extends State<FirebaseScreen> {
     fieldAttachment.hint = "Attachment";
 
     return SingleChildScrollView(
-        child: Padding(
-      padding: const EdgeInsets.all(AppUIDimens.paddingMedium),
-      child: Form(
-          autovalidateMode: mode,
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              fieldTitle,
-              fieldDesc,
-              fieldLocation,
-              const SizedBox(
-                height: 20,
-              ),
-              if (image != null)
-                SizedBox(
-                    height: 130,
-                    child: Stack(
-                      alignment: Alignment.topRight,
-                      children: [
-                        Center(
-                            child: Image.file(File(image!.path), height: 100)),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            IconButton(
-                              icon: const Icon(
-                                Icons.cancel_rounded,
-                                color: Colors.black,
-                              ),
-                              onPressed: () {
-                                image = null;
-                                setState(() {});
-                              },
-                            )
-                          ],
-                        )
-                      ],
-                    )),
-              if (image == null)
-                const SizedBox(height: 30, child: Text("Select Image")),
-              if (image == null)
-                CustomButton(
-                  label: "Image from Gallery",
-                  arrowVisible: false,
-                  onPressed: () async {
-                    image = (await ImagePicker()
-                        .pickImage(source: ImageSource.gallery)) as XFile;
-                    setState(() {});
-                  },
-                ),
-              if (image == null)
-                const SizedBox(
-                  height: 20,
-                  child: Center(child: Text("-------- OR ---------")),
-                ),
-              if (image == null)
-                CustomButton(
-                  label: "Image from Camera",
-                  arrowVisible: false,
-                  onPressed: () async {
-                    image = (await ImagePicker()
-                        .pickImage(source: ImageSource.camera)) as XFile;
-                    setState(() {});
-                  },
-                ),
-              const SizedBox(height: 30),
-              CustomButton(
-                label: "Submit",
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    AndroidDeviceInfo androidInfo =
-                        await DeviceInfoPlugin().androidInfo;
-                    context.read<FirebaseBloc>().add(PageOnLoadEvent());
-                    context.read<FirebaseBloc>().add(OnFirebaseSaveEvent(
-                        firebase: FirebaseRequest(
-                            title: mTitleController.text,
-                            description: mDescController.text,
-                            date: DateFormat("dd-MM-yyyy HH:mm:ss")
-                                .format(DateTime.now()),
-                            attachment: image != null ? image!.path : "",
-                            location: mLocationController.text),
-                        userId: userCredential.user.uid));
-                  } else {
-                    setState(() {
-                      mode = AutovalidateMode.always;
-                    });
-                  }
-                },
-              ),
-              if(showListButton)
-              const SizedBox(height: 30),
-              if(showListButton)
-              CustomButton(
-                label: "Go To Report List Screen",
-                onPressed: () {
-                  // context.read<FirebaseBloc>().add(OnFormLoadEvent());
-                  Navigator.pushNamed(context, Routes.firebaseList,
-                      arguments: Argument(userCredential.user!.uid));
-                },
-              ),
-            ],
-          )),
-    ));
+        child: Card(
+            margin: const EdgeInsets.all(AppUIDimens.paddingXSmall),
+            child: Padding(
+              padding: const EdgeInsets.all(AppUIDimens.paddingMedium),
+              child: Form(
+                  autovalidateMode: mode,
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      fieldTitle,
+                      fieldDesc,
+                      fieldLocation,
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      if (image != null)
+                        SizedBox(
+                            height: 130,
+                            child: Stack(
+                              alignment: Alignment.topRight,
+                              children: [
+                                Center(
+                                    child: Image.file(File(image!.path),
+                                        height: 100)),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.cancel_rounded,
+                                        color: Colors.black,
+                                      ),
+                                      onPressed: () {
+                                        image = null;
+                                        setState(() {});
+                                      },
+                                    )
+                                  ],
+                                )
+                              ],
+                            )),
+                      if (image == null)
+                        const SizedBox(height: 30, child: Text("Select Image")),
+                      if (image == null)
+                        CustomButton(
+                          label: "Image from Gallery",
+                          arrowVisible: false,
+                          onPressed: () async {
+                            image = (await ImagePicker().pickImage(
+                                source: ImageSource.gallery)) as XFile;
+                            setState(() {});
+                          },
+                        ),
+                      if (image == null)
+                        const SizedBox(
+                          height: 20,
+                          child: Center(child: Text("-------- OR ---------")),
+                        ),
+                      if (image == null)
+                        CustomButton(
+                          label: "Image from Camera",
+                          arrowVisible: false,
+                          onPressed: () async {
+                            image = (await ImagePicker().pickImage(
+                                source: ImageSource.camera)) as XFile;
+                            setState(() {});
+                          },
+                        ),
+                      const SizedBox(height: 30),
+                      CustomButton(
+                        label: "Submit",
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            AndroidDeviceInfo androidInfo =
+                                await DeviceInfoPlugin().androidInfo;
+                            context.read<FirebaseBloc>().add(PageOnLoadEvent());
+                            context.read<FirebaseBloc>().add(
+                                OnFirebaseSaveEvent(
+                                    firebase: FirebaseRequest(
+                                        title: mTitleController.text,
+                                        description: mDescController.text,
+                                        date: DateFormat("dd-MM-yyyy HH:mm:ss")
+                                            .format(DateTime.now()),
+                                        attachment:
+                                            image != null ? image!.path : "",
+                                        location: mLocationController.text),
+                                    userId: userCredential.user.uid));
+                          } else {
+                            setState(() {
+                              mode = AutovalidateMode.always;
+                            });
+                          }
+                        },
+                      ),
+                      if (showListButton) const SizedBox(height: 30),
+                      if (showListButton)
+                        CustomButton(
+                          label: "Go To Report List Screen",
+                          onPressed: () {
+                            // context.read<FirebaseBloc>().add(OnFormLoadEvent());
+                            Navigator.pushNamed(context, Routes.firebaseList,
+                                arguments: Argument(userCredential.user!.uid));
+                          },
+                        ),
+                    ],
+                  )),
+            )));
   }
 
   errorWidget(FirebaseError state) {
@@ -258,35 +263,38 @@ class _FirebaseScreenState extends State<FirebaseScreen> {
 
   firebaseSaved() {
     _clearFields();
-    return Padding(
-        padding: const EdgeInsets.all(AppUIDimens.paddingMedium),
-        child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.done_all_rounded,
-                color: Colors.green,
-                size: 40,
-              ),
-              const Text("Report sent successfully!"),
-              const SizedBox(height: 30),
-              CustomButton(
-                label: "New Report",
-                onPressed: () {
-                  context.read<FirebaseBloc>().add(OnFormLoadEvent());
-                },
-              ),
-              const SizedBox(height: 30),
-              CustomButton(
-                label: "Go To Report List Screen",
-                onPressed: () {
-                  // context.read<FirebaseBloc>().add(OnFormLoadEvent());
-                  Navigator.pushNamed(context, Routes.firebaseList,
-                      arguments: Argument(userCredential.user!.uid));
-                },
-              ),
-            ]));
+    return Card(
+        margin: const EdgeInsets.all(AppUIDimens.paddingXSmall),
+        child: Padding(
+            padding: const EdgeInsets.all(AppUIDimens.paddingMedium),
+            child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 70),
+                  const Icon(
+                    Icons.done_all_rounded,
+                    color: Colors.green,
+                    size: 40,
+                  ),
+                  const Text("Report sent successfully!"),
+                  const SizedBox(height: 50),
+                  CustomButton(
+                    label: "New Report",
+                    onPressed: () {
+                      context.read<FirebaseBloc>().add(OnFormLoadEvent());
+                    },
+                  ),
+                  const SizedBox(height: 30),
+                  CustomButton(
+                    label: "Go To Report List Screen",
+                    onPressed: () {
+                      // context.read<FirebaseBloc>().add(OnFormLoadEvent());
+                      Navigator.pushNamed(context, Routes.firebaseList,
+                          arguments: Argument(userCredential.user!.uid));
+                    },
+                  ),
+                ])));
   }
 
   _clearFields() {
