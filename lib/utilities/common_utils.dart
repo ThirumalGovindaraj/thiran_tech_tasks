@@ -5,6 +5,8 @@ import 'package:permission_handler/permission_handler.dart';
 // import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:tasks/bloc/github/github_details_screen.dart';
 
+import '../bloc/firebase_list/firebase_details.dart';
+
 class CommonUtils {
   CommonUtils._();
 
@@ -34,6 +36,19 @@ class CommonUtils {
       ),
       builder: (BuildContext context) {
         return GithubDetailScreen(item: repoItem);
+      },
+    );
+  }
+
+  static showFirebaseBottomSheet(BuildContext context, {dynamic firebaseItem}) async {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+      ),
+      builder: (BuildContext context) {
+        return FirebaseDetailScreen(item: firebaseItem);
       },
     );
   }

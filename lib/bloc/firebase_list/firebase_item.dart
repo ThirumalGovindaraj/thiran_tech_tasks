@@ -39,7 +39,7 @@ class FirebaseItem extends StatelessWidget {
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [Text(item.title!), Text(item.description!)],
+                      children: [Text(item.title!), Text(item.description!), Text(item.date!)],
                     )
                   ])
                 ],

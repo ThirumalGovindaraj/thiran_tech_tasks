@@ -18,7 +18,8 @@ class FirebaseListBloc extends Bloc<FirebaseListEvent, FirebaseListState> {
       emit(FirebaseListLoading());
     });
     on<OnFetchFirebaseEvent>((event, emit) async {
-      dynamic response = FirebaseUtils.getBugReport(event.userId);
+      dynamic response = await FirebaseUtils.getBugReport(event.userId);
+      // debugPrint(response);
       if(response is List<FirebaseRequest>) {
         emit(FirebaseListLoaded(response));
       }else{

@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:tasks/bloc/firebase_list/argument.dart';
 import 'package:tasks/utilities/common_utils.dart';
 import 'package:tasks/utilities/firebase_utils.dart';
 
@@ -47,7 +48,7 @@ class _FirebaseScreenState extends State<FirebaseScreen> {
     try {
       userCredential = await FirebaseAuth.instance.signInAnonymously();
       print("Signed in with temporary account.${userCredential.user!.uid}");
-      await FirebaseUtils.getBugReport(userCredential.user!.uid);
+     // await FirebaseUtils.getBugReport(userCredential.user!.uid);
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case "operation-not-allowed":
@@ -264,7 +265,8 @@ class _FirebaseScreenState extends State<FirebaseScreen> {
                 label: "Go To Report Detail Screen",
                 onPressed: () {
                   // context.read<FirebaseBloc>().add(OnFormLoadEvent());
-                  Navigator.pushNamed(context, Routes.firebaseList);
+                  Navigator.pushNamed(context, Routes.firebaseList,
+                      arguments: Argument(userCredential.user!.uid));
                 },
               ),
             ]));

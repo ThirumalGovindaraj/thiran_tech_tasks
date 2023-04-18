@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tasks/bloc/email/email.dart';
 import 'package:tasks/bloc/firebase/firebase_request.dart';
@@ -45,21 +46,22 @@ class FirebaseUtils {
   }
 
   static Future<dynamic> getBugReport(String userId) async {
-    List<EmailRequest> emails = [];
+    List<FirebaseRequest> emails = [];
     try {
-      _db.collection("bugs").where("uid", isEqualTo: userId).get().then(
-            (querySnapshot) {
-          print("Successfully completed");
+      await _db.collection("bugs").where("uid", isEqualTo: userId).get().then(
+        (querySnapshot) {
+          debugPrint("Successfully completed");
           for (var docSnapshot in querySnapshot.docs) {
-            print('${docSnapshot.id} => ${docSnapshot.data()}');
-            emails.add(EmailRequest.fromJson(docSnapshot.data()));
+            debugPrint('${docSnapshot.id} => ${docSnapshot.data()}');
+            emails.add(FirebaseRequest.fromJson(docSnapshot.data()));
           }
+          return emails;
         },
         onError: (e) => print("Error completing: $e"),
       );
       // final userProfileRef = _db.collection("bugs").doc(userId);
       // await userProfileRef.set(request.toJson(), SetOptions(merge: true));
-      return true;
+      return emails;
     } catch (e) {
       return e.toString();
     }

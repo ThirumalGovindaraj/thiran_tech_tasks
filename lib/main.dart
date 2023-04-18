@@ -10,7 +10,7 @@ import 'package:tasks/bloc/firebase_list/firebase_list_bloc.dart';
 import 'package:tasks/bloc/home/home_screen.dart';
 import 'package:tasks/helpers/app_preferences.dart';
 import 'package:tasks/utilities/app_color.dart';
-import 'package:tasks/utilities/app_routes.dart';
+import 'package:tasks/utilities/routes_generator.dart';
 import 'package:tasks/utilities/routes.dart';
 import 'package:http/http.dart' as http;
 
@@ -246,6 +246,7 @@ class MyApp extends StatelessWidget {
                   const TextTheme(labelMedium: TextStyle(color: Colors.white))),
           home: const HomeScreen(),
           initialRoute: Routes.splash,
+          onGenerateRoute: AppRoutes.generateRoutes,
           routes: AppRoutes.routes,
         ));
   }
