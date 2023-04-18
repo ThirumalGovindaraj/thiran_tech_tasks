@@ -15,16 +15,24 @@ class GithubScreen extends StatefulWidget {
 }
 
 class _GithubScreenState extends State<GithubScreen> {
+  ScrollController? controller;
+
   @override
   void initState() {
-    context.read<GithubBloc>().add(PageOnLoadEvent(
-        "https://api.github.com/search/repositories?q=created:%3E${getDate()}&sort=stars&order=desc"));
+    context.read<GithubBloc>().add(PageOnLoadEvent());
+    controller = ScrollController()..addListener(_scrollListener);
     super.initState();
   }
 
-  getDate() {
-    return DateFormat("yyyy-MM-dd")
-        .format(DateTime.now().subtract(const Duration(days: 30)));
+  bool loadBottom = false;
+
+  void _scrollListener() {
+    if (controller!.offset >= controller!.position.maxScrollExtent &&
+        !controller!.position.outOfRange) {
+      loadBottom = true;
+      setState(() {});
+      context.read<GithubBloc>().add(OnGithubListPaginationEvent());
+    }
   }
 
   @override
@@ -42,20 +50,31 @@ class _GithubScreenState extends State<GithubScreen> {
         child: BlocBuilder<GithubBloc, GithubState>(
           builder: (context, state) {
             if (state is GithubLoaded) {
-              return ListView.separated(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: AppUIDimens.paddingXXSmall),
-                  itemBuilder: (context, index) {
-                    return GithubRepoItem(
-                      item: state.response.items![index],
-                      onTap: () {
-                        CommonUtils.showBottomSheet(context,
-                            repoItem: state.response.items![index]);
-                      },
-                    );
-                  },
-                  separatorBuilder: (context, index) => Container(),
-                  itemCount: state.response.items!.length);
+              return SingleChildScrollView(
+                  controller: controller,
+                  child: Column(children: [
+                    ListView.separated(
+                        shrinkWrap: true,
+                        primary: false,
+                        // controller: controller,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: AppUIDimens.paddingXXSmall),
+                        itemBuilder: (context, index) {
+                          return GithubRepoItem(
+                            item: state.response.items![index],
+                            onTap: () {
+                              CommonUtils.showBottomSheet(context,
+                                  repoItem: state.response.items![index]);
+                            },
+                          );
+                        },
+                        separatorBuilder: (context, index) => Container(),
+                        itemCount: state.response.items!.length),
+                    if (loadBottom)
+                      const Padding(
+                          padding: EdgeInsets.all(10),
+                          child: CircularProgressIndicator())
+                  ]));
             } else if (state is GithubError) {
               return SizedBox(
                   height: MediaQuery.of(context).size.height / 2,

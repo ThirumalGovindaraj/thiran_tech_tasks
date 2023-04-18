@@ -21,25 +21,44 @@ class GithubRepoItem extends StatelessWidget {
               padding: const EdgeInsets.all(AppUIDimens.paddingMedium),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Row(children: [
-              ClipRRect(
-              borderRadius: BorderRadius.circular(8.0),
-              child:CachedNetworkImage(
-                      imageUrl: item.owner!.avatarUrl!,
-                      placeholder: (context, url) =>
-                          const Icon(Icons.account_circle_outlined),
-                      errorWidget: (context, url, error) =>
-                          const Icon(Icons.account_circle_outlined),
-                      width: 50.0,
-                    )),
+                  Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    ClipRRect(
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: CachedNetworkImage(
+                          imageUrl: item.owner!.avatarUrl!,
+                          placeholder: (context, url) => const Icon(
+                            Icons.account_circle_outlined,
+                            size: 50.0,
+                          ),
+                          errorWidget: (context, url, error) => const Icon(
+                              Icons.account_circle_outlined,
+                              size: 50.0),
+                          width: 50.0,
+                        )),
                     const SizedBox(
-                      width: AppUIDimens.paddingXLarge,
+                      width: AppUIDimens.paddingLarge,
                     ),
-                    Column(
+                    Expanded(
+                        child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [Text(item.name!), Text(item.fullName!)],
-                    )
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Text(
+                          item.name!,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15),
+                        ),
+                        const SizedBox(
+                          height: 4,
+                        ),
+                        Text(
+                          item.fullName!,
+                        )
+                      ],
+                    ))
                   ])
                 ],
               )),

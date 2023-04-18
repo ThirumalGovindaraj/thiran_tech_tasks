@@ -9,13 +9,14 @@ import 'package:tasks/bloc/splash/splash_screen.dart';
 import 'package:tasks/utilities/routes.dart';
 
 import '../bloc/email_list/email_list_screen.dart';
+import '../bloc/github/github_pagination.dart';
 import '../bloc/home/home_screen.dart';
 
 class AppRoutes {
   static final routes = {
     Routes.splash: (context) => const SplashScreen(),
     Routes.home: (context) => const HomeScreen(),
-    Routes.github: (context) => const GithubScreen(),
+    Routes.github: (context) => const GithubListView(),
     Routes.email: (context) => const EmailScreen(),
     Routes.firebase: (context) => const FirebaseScreen(),
     Routes.emailList: (context) => const TransactionListScreen(),
@@ -47,7 +48,7 @@ class AppRoutes {
         );
       case Routes.github:
         return MaterialPageRoute(
-          builder: (context) => const GithubScreen(),
+          builder: (context) => const GithubListView(),
         );
       case Routes.email:
         return MaterialPageRoute(

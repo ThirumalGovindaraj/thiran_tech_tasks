@@ -1,8 +1,10 @@
 import 'dart:convert';
 
-import 'package:tasks/bloc/github/github_response.dart';
 import 'package:http/http.dart' as http;
-import 'package:tasks/utilities/validation_utils.dart';
+import 'package:tasks/bloc/github/github_response.dart';
+import 'package:tasks/utilities/common_utils.dart';
+
+import '../../helpers/app_preferences.dart';
 import '../../helpers/webservice_helper.dart';
 import 'error_response.dart';
 
@@ -17,9 +19,18 @@ class GithubRepository implements GithubRepositoryInterface {
 
   @override
   Future getGithubRepository({required String url}) async {
-    dynamic response = await _helper.get(url);
+    http.Response response = await _helper.get(url);
     if (response is! ErrorResponse) {
-      return GithubResponse.fromJson(response);
+      Map<String, String> url =
+          CommonUtils.parseLinkHeader(response.headers["link"]!);
+      if (url.containsKey("next")) {
+        await AppPreferences.setLastPage(false);
+        await AppPreferences.setNextPageUrl(url["next"]!);
+      } else {
+        await AppPreferences.setLastPage(true);
+      }
+
+      return GithubResponse.fromJson(jsonDecode(response.body)).items;
     } else {
       return response;
     }

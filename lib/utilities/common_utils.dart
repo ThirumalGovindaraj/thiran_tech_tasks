@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
+import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 // import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:tasks/bloc/github/github_details_screen.dart';
 
 import '../bloc/firebase_list/firebase_details.dart';
+import '../helpers/app_preferences.dart';
 
 class CommonUtils {
   CommonUtils._();
@@ -42,7 +44,8 @@ class CommonUtils {
     );
   }
 
-  static showFirebaseBottomSheet(BuildContext context, {dynamic firebaseItem}) async {
+  static showFirebaseBottomSheet(BuildContext context,
+      {dynamic firebaseItem}) async {
     showModalBottomSheet<void>(
       context: context,
       enableDrag: false,
@@ -103,6 +106,20 @@ class CommonUtils {
       return Colors.red;
     } else {
       return Colors.black;
+    }
+  }
+
+  static getDateMonthBefore() {
+    return DateFormat("yyyy-MM-dd")
+        .format(DateTime.now().subtract(const Duration(days: 30)));
+  }
+
+  static getUrl() {
+    if (AppPreferences.instance.nextPageUrl != null &&
+        AppPreferences.instance.nextPageUrl!.isNotEmpty) {
+      return AppPreferences.instance.nextPageUrl!;
+    } else {
+      return "https://api.github.com/search/repositories?q=created:%3E${getDateMonthBefore()}&sort=stars&order=desc&page=32";
     }
   }
 }

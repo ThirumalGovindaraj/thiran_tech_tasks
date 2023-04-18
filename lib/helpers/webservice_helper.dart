@@ -27,7 +27,7 @@ class WebServiceHelper {
                 seconds: WebserviceConstants.apiServiceTimeOutInSeconds),
             onTimeout: _onTimeOut);
     if (ValidationUtils.isSuccessResponse(response.statusCode)) {
-      return jsonDecode(response.body);
+      return response;
     } else {
       return ErrorResponse.fromJson(jsonDecode(response.body));
     }

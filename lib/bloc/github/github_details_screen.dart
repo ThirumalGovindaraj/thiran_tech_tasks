@@ -63,6 +63,7 @@ class GithubDetailScreen extends StatelessWidget {
                 fieldName: "Repository Name",
                 fieldValue: item.name!,
               ),
+              if(item.description!=null)
               RepoDetailItem(
                 fieldName: "Repository Description",
                 fieldValue: item.description!,
